@@ -91,10 +91,14 @@ def get_genre_by_artist(row, **kwargs):
     genres = []
     if not isinstance(row, str):
         for artist in row.get("artists", []):
-            request_url = f"https://api.spotify.com/v1/artists/{artist['artist_id']}"
-            genres.extend(
-                json.loads(make_request(request_url, params=kwargs).text).get("genres", [])
-            )
+            try:
+                request_url = f"https://api.spotify.com/v1/artists/{artist['artist_id']}"
+                genres.extend(
+                    json.loads(make_request(request_url, params=kwargs).text).get("genres", [])
+                )
+            except Exception as e:
+                logger.error(e)
+                continue
     else:
         request_url = f"https://api.spotify.com/v1/artists/{row}"
         genres.extend(json.loads(make_request(request_url, params=kwargs).text).get("genres", []))
